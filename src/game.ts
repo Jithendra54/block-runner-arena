@@ -16,7 +16,7 @@ export class Runner {
   state: GameState = { score: 0, coins: 0, distance: 0, running: false, over: false, paused: false }
   onChange: (s: GameState) => void
   onOver: (run: GameState, durationMs: number) => void
-  constructor(canvas: HTMLCanvasElement, onChange: (s: GameState) => void, onOver: () => void) {
+  constructor(canvas: HTMLCanvasElement, onChange: (s: GameState) => void, onOver: (run: GameState, durationMs: number) => void) {
     this.canvas = canvas
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('Canvas unavailable')
