@@ -36,8 +36,9 @@ export class Runner {
     if (this.spawn <= 0) { const lane = Math.floor(Math.random()*3); const roll = Math.random(); this.obstacles.push({lane,z:0,kind:roll<0.23?'coin':roll<0.55?'barrier':'train',hit:false}); this.spawn = Math.max(0.42, 0.95 - this.speed*0.7) }
     this.obstacles.forEach(o => { o.z += this.speed*dt; if (!o.hit && o.z > 0.84 && o.z < 0.94 && o.lane === this.lane) { o.hit=true; if (o.kind==='coin') this.state.coins++; else if ((o.kind==='barrier' && this.jump<0.25) || (o.kind==='train' && this.slide<0.25)) this.state.over=true } })
     this.obstacles = this.obstacles.filter(o=>o.z<1.08)
-    this.draw(); this.onChange({...this.state})
-    if (this.state.over) { this.state.running=false; this.onOver({...this.state}, Math.max(1000, time-this.startedAt)); return }
+    this.draw()
+    if (this.state.over) { this.state.running=false; this.onChange({...this.state}); this.onOver({...this.state}, Math.max(1000, time-this.startedAt)); return }
+    this.onChange({...this.state})
     this.raf=requestAnimationFrame(this.frame)
   }
   draw() {
