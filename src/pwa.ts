@@ -1,5 +1,6 @@
 export function registerPwa() {
-  if (!('serviceWorker' in navigator) || !import.meta.env.PROD) return
+  const isProduction = (import.meta as ImportMeta & { env: { PROD: boolean } }).env.PROD
+  if (!('serviceWorker' in navigator) || !isProduction) return
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch((error: unknown) => {
       console.warn('Offline app support could not be enabled.', error)
