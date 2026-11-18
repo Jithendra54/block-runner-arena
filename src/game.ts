@@ -12,23 +12,24 @@ export class Runner {
   spawn = 0
   obstacles: Obstacle[] = []
   raf = 0
+  startedAt = 0
   state: GameState = { score: 0, coins: 0, distance: 0, running: false, over: false, paused: false }
   onChange: (s: GameState) => void
-  onOver: () => void
+  onOver: (run: GameState, durationMs: number) => void
   constructor(canvas: HTMLCanvasElement, onChange: (s: GameState) => void, onOver: () => void) {
     this.canvas = canvas
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('Canvas unavailable')
     this.ctx = ctx; this.onChange = onChange; this.onOver = onOver
   }
-  start() { this.state = { score: 0, coins: 0, distance: 0, running: true, over: false, paused: false }; this.lane = 1; this.jump = 0; this.slide = 0; this.speed = 0.29; this.last = 0; this.spawn = 0; this.obstacles = []; this.onChange(this.state); cancelAnimationFrame(this.raf); this.raf = requestAnimationFrame(this.frame) }
+  start() { this.state = { score: 0, coins: 0, distance: 0, running: true, over: false, paused: false }; this.lane = 1; this.jump = 0; this.slide = 0; this.speed = 0.29; this.last = 0; this.startedAt = performance.now(); this.spawn = 0; this.obstacles = []; this.onChange(this.state); cancelAnimationFrame(this.raf); this.raf = requestAnimationFrame(this.frame) }
   pause() { if (!this.state.running || this.state.over) return; this.state.paused = !this.state.paused; this.onChange(this.state); if (!this.state.paused) { this.last = 0; this.raf = requestAnimationFrame(this.frame) } }
   move(dir: number) { this.lane = Math.max(0, Math.min(2, this.lane + dir)) }
   act(kind: 'jump'|'slide') { if (kind === 'jump') this.jump = 0.72; else this.slide = 0.65 }
   frame = (time: number) => {
     if (!this.state.running || this.state.paused || this.state.over) return
     const dt = Math.min((time - (this.last || time)) / 1000, 0.04); this.last = time
-    this.state.distance += this.speed * dt * 350; this.state.score = Math.floor(this.state.distance) + this.state.coins * 25
+    this.state.distance += this.speed * dt * 60; this.state.score = Math.floor(this.state.distance) + this.state.coins * 25
     this.speed = Math.min(0.62, 0.29 + this.state.distance / 18000)
     this.jump = Math.max(0, this.jump - dt); this.slide = Math.max(0, this.slide - dt)
     this.spawn -= dt
@@ -36,7 +37,7 @@ export class Runner {
     this.obstacles.forEach(o => { o.z += this.speed*dt; if (!o.hit && o.z > 0.84 && o.z < 0.94 && o.lane === this.lane) { o.hit=true; if (o.kind==='coin') this.state.coins++; else if ((o.kind==='barrier' && this.jump<0.25) || (o.kind==='train' && this.slide<0.25)) this.state.over=true } })
     this.obstacles = this.obstacles.filter(o=>o.z<1.08)
     this.draw(); this.onChange({...this.state})
-    if (this.state.over) { this.state.running=false; this.onOver(); return }
+    if (this.state.over) { this.state.running=false; this.onOver({...this.state}, Math.max(1000, time-this.startedAt)); return }
     this.raf=requestAnimationFrame(this.frame)
   }
   draw() {
