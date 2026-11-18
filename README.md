@@ -4,7 +4,7 @@ An original voxel-inspired endless runner built with React, TypeScript, Vite, Ca
 
 ## Status
 
-The repository contains a playable three-lane game with keyboard and touch controls, responsive interface, CSS/canvas artwork, SEO metadata, policy pages, Supabase schema baseline, and an installable PWA shell with an offline cache for same-origin app files. The game can launch offline after a successful first visit; accounts, scores, leaderboard, chat and ads require a network. Supabase-backed registration, persisted leaderboard, live VIP chat, moderation and admin tools are not yet integrated. No fake player records are shipped.
+The repository includes a playable three-lane game with keyboard and touch controls, responsive interface, original CSS/canvas visuals, SEO and policy pages, an installable PWA shell, and a Supabase schema for player profiles and score history. The profile page lets players set a runner name and a 160-character bio saved on the current device. Account registration and server profile syncing are not connected yet. There is no chat feature.
 
 ## Local development
 
@@ -16,17 +16,17 @@ cp .env.example .env
 npm run dev
 ```
 
-The game works without Supabase. Create a Supabase project, set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then apply `supabase/migrations/202611170001_arena.sql` in the SQL editor.
+The game works without Supabase. Create a Supabase project, set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then apply `supabase/migrations/202611170001_arena.sql` in the SQL editor. If you previously applied the older schema containing VIP chat, also apply `supabase/migrations/202611180001_remove_chat_add_bio.sql` to remove those tables/functions and add the bio column.
 
 ## Supabase
 
 1. Create a free project and enable email/password auth.
-2. Apply the SQL migration.
-3. Register your owner account, copy its UUID from Authentication → Users, and add it to `public.admins` using SQL editor. Do not assign admin via client code.
+2. Apply the migrations in chronological order.
+3. Register your owner account, copy its UUID from Authentication → Users, and add it to `public.admins` using the SQL editor. Do not assign admin through client code.
 4. Never expose the service-role key. Only the anon key belongs in browser variables.
-5. Use the `submit_run` and `leaderboard` RPCs for scores and rankings. Enable Realtime on `vip_messages`.
+5. Use the `submit_run` and `leaderboard` RPCs for scores and rankings.
 
-This migration is a security baseline, not a complete backend integration. Client-submitted score checks only enforce plausibility bounds; production anti-cheat needs server-issued signed runs and server simulation.
+The schema is a security baseline, not a complete backend integration. Client-submitted score checks only enforce plausibility bounds; production anti-cheat needs server-issued signed runs and server simulation.
 
 ## Cloudflare Pages
 
@@ -34,13 +34,9 @@ Connect this GitHub repository in Cloudflare Pages. Use Vite preset, build comma
 
 Free tiers can change. Cloudflare Pages Free currently offers up to 500 builds/month, one concurrent build and 20-minute build timeout. Supabase Free includes 500 MB database, 5 GB egress, 50,000 MAUs, and may pause low-activity projects after about a week. Neither free service guarantees uptime; check quotas before launch.
 
-## Ads
-
-Ads stay disabled until AdSense approval. No fake credentials are included. After approval, configure valid IDs and Google's official script with appropriate consent handling. Keep placements outside the game canvas and touch controls. Never click your own ads or encourage clicks.
-
 ## Install as an app
 
-Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Online accounts, leaderboard, chat and advertising require a connection. This PWA is the same free web application; publishing a native store app is a separate process.
+Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Accounts, scores, leaderboard and advertising require a connection.
 
 ## Controls
 
@@ -48,4 +44,4 @@ Open the deployed HTTPS website on a supported browser and choose **Install app*
 
 ## Before launch
 
-The starter does not yet contain registration UI, live VIP chat UI, or a functional admin control panel. Complete the backend integration and review database policies before opening user accounts.
+The profile editor currently saves to local storage on the device. Registration and server-side profile sync need to be connected before profile bios can appear across devices. The global leaderboard and admin dashboard also need their application UI and backend integration.
