@@ -15,8 +15,9 @@ begin
   end if;
 end $$;
 
-drop function if exists public.vip_send(uuid,text);
-drop function if exists public.is_current_vip(uuid);
+-- Drop tables first so their RLS policies no longer depend on the VIP function.
 drop table if exists public.user_reports cascade;
 drop table if exists public.vip_messages cascade;
 drop table if exists public.vip_conversations cascade;
+drop function if exists public.vip_send(uuid,text);
+drop function if exists public.is_current_vip(uuid);
