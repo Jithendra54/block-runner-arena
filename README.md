@@ -4,7 +4,7 @@ An original voxel-inspired endless runner built with React, TypeScript, Vite, Ca
 
 ## Status
 
-The repository contains a playable three-lane game with keyboard and touch controls, responsive interface, CSS/canvas artwork, SEO metadata, policy pages and a Supabase schema baseline. Supabase-backed registration, persisted leaderboard, live VIP chat, moderation and admin tools are not yet integrated. No fake player records are shipped.
+The repository contains a playable three-lane game with keyboard and touch controls, responsive interface, CSS/canvas artwork, SEO metadata, policy pages, Supabase schema baseline, and an installable PWA shell with an offline cache for same-origin app files. The game can launch offline after a successful first visit; accounts, scores, leaderboard, chat and ads require a network. Supabase-backed registration, persisted leaderboard, live VIP chat, moderation and admin tools are not yet integrated. No fake player records are shipped.
 
 ## Local development
 
@@ -37,6 +37,10 @@ Free tiers can change. Cloudflare Pages Free currently offers up to 500 builds/m
 ## Ads
 
 Ads stay disabled until AdSense approval. No fake credentials are included. After approval, configure valid IDs and Google's official script with appropriate consent handling. Keep placements outside the game canvas and touch controls. Never click your own ads or encourage clicks.
+
+## Install as an app
+
+Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Online accounts, leaderboard, chat and advertising require a connection. This PWA is the same free web application; publishing a native store app is a separate process.
 
 ## Controls
 
