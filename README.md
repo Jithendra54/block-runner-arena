@@ -4,7 +4,7 @@ An original voxel-inspired endless runner built with React, TypeScript, Vite, Ca
 
 ## Features and status
 
-The repository includes a playable three-lane runner, keyboard and touch controls, responsive UI, original CSS/canvas artwork, PWA install/offline shell, and About/Privacy/Terms/Contact pages. Player profiles support a runner name and 160-character bio. With Supabase configured, players can register, sign in, reset passwords and sync their profile. The global leaderboard UI currently has no live data integration. There is no chat feature.
+The repository includes a playable three-lane runner, keyboard and touch controls, responsive UI, original CSS/canvas artwork, PWA install/offline shell, and About/Privacy/Terms/Contact pages. Player profiles support a runner name and 160-character bio. With Supabase configured, players can register, sign in, reset passwords, save profiles, submit completed runs, and view the live leaderboard. There is no chat feature. The admin screen remains a placeholder.
 
 ## Local development
 
@@ -16,18 +16,20 @@ cp .env.example .env
 npm run dev
 ```
 
-Without Supabase settings, the profile editor saves locally in the browser. The game itself remains playable.
+Without Supabase settings, the profile editor saves locally and the game remains playable. Scores are submitted only for signed-in users who have saved a valid profile.
 
 ## Supabase setup
 
 1. Create a free Supabase project and enable email/password authentication.
 2. Copy the project URL and **anon/public key** into `.env` as `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Never put a service-role key in frontend variables.
 3. Apply `supabase/migrations/202611170001_arena.sql` in the SQL editor.
-4. If you applied the earlier VIP chat migration from a previous version, apply `supabase/migrations/202611180001_remove_chat_add_bio.sql` to remove its tables/functions and add the bio field.
-5. Set the Supabase Auth site URL and allowed redirect URLs to your deployed HTTPS origin. Email confirmation can be enabled; users must confirm before signing in if enabled.
-6. The profile page can create an account, sign in/out, request a password reset, and save the username/bio to the authenticated user's profile row. Username uniqueness is enforced by PostgreSQL RLS-protected writes.
+4. If you applied an older schema with VIP messaging, apply `202611180001_remove_chat_add_bio.sql`.
+5. Apply `202611180002_run_validation.sql` to align speed checks with the game and rate-limit run submissions.
+6. Apply `202611180003_realtime_leaderboard.sql` to publish score changes for live ranking refresh.
+7. Set Supabase Auth Site URL and redirect URLs to the deployed HTTPS origin. With email confirmation enabled, players must confirm their email before signing in.
+8. Create an account, choose a unique 3–18 character username using letters, numbers or underscores, and save the profile before playing a ranked run.
 
-This SQL is a baseline. Client-submitted game score checks only enforce plausibility bounds; production anti-cheat needs server-issued signed runs and server simulation.
+The leaderboard ranks each player's highest non-suspicious score, breaking ties by earliest achievement. Score writes use a server-side RPC with range, speed, coin and submission-rate checks. This is basic plausibility validation, not cheat-proof server simulation.
 
 ## Cloudflare Pages
 
@@ -37,7 +39,7 @@ Free tiers can change. Cloudflare Pages Free currently offers up to 500 builds/m
 
 ## Install as an app
 
-Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Accounts, profile sync, leaderboard and advertising require a connection.
+Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Accounts, profile sync, ranked scores and leaderboard require a connection.
 
 ## Controls
 
@@ -45,4 +47,4 @@ Open the deployed HTTPS website on a supported browser and choose **Install app*
 
 ## Remaining integration
 
-The score submission and leaderboard functions exist in SQL, but the UI does not yet submit runs or load live rankings. The admin screen is still a placeholder. The profile page is connected to Supabase Auth and profile storage when configured.
+The admin screen does not yet provide user/score moderation controls. Configure Supabase and apply all migrations before enabling ranked play.
