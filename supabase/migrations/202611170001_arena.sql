@@ -49,7 +49,7 @@ begin
   if uid is null then raise exception 'Sign in required'; end if;
   if p_score < 0 or p_distance < 0 or p_coins < 0 or p_duration_ms not between 1000 and 7200000 then raise exception 'Invalid run'; end if;
   if p_score > 10000000 or p_distance > 10000000 or p_coins > 100000 then raise exception 'Run out of range'; end if;
-  suspicious_run := p_distance > (p_duration_ms / 1000.0) * 20
+  suspicious_run := p_distance > (p_duration_ms / 1000.0) * 40
     or p_coins > (p_duration_ms / 1000.0) * 15
     or p_score > p_distance + p_coins * 100;
   insert into public.game_runs(player_id,score,distance,coins,duration_ms,suspicious)
