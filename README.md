@@ -1,50 +1,44 @@
 # Block Runner Arena
 
-An original voxel-inspired endless runner built with React, TypeScript, Vite, Canvas and Supabase.
+A free, installable browser game. It uses React, TypeScript, Vite and Canvas. It has no account service, database, ad network, analytics, or backend.
 
-## Features and status
+## Local-only behavior
 
-The repository includes a playable three-lane runner, keyboard and touch controls, responsive UI, original CSS/canvas artwork, PWA install/offline shell, and About/Privacy/Terms/Contact pages. Player profiles support a runner name and 160-character bio. With Supabase configured, players can register, sign in, reset passwords, save profiles, submit completed runs, and view the live leaderboard. There is no chat feature. The admin screen remains a placeholder.
+- The game works in the browser and as an installable PWA.
+- Runner name, bio and completed runs are stored in this browser's local storage.
+- The leaderboard shows each local profile's best score, on this device only.
+- There is no shared/global leaderboard, cross-device sync, or online account.
+- Clear the site's browser data to erase its profile and scores.
+- No service quotas or paid APIs are involved. Hosting is only needed to distribute the app; you can run the built files locally too.
 
-## Local development
+## Run locally
 
 Requires Node.js 20+ and npm.
 
 ```sh
 npm install
-cp .env.example .env
 npm run dev
 ```
 
-Without Supabase settings, the profile editor saves locally and the game remains playable. Scores are submitted only for signed-in users who have saved a valid profile.
+Build the static app with:
 
-## Supabase setup
+```sh
+npm run build
+npm run preview
+```
 
-1. Create a free Supabase project and enable email/password authentication.
-2. Copy the project URL and **anon/public key** into `.env` as `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Never put a service-role key in frontend variables.
-3. Apply `supabase/migrations/202611170001_arena.sql` in the SQL editor.
-4. If you applied an older schema with VIP messaging, apply `202611180001_remove_chat_add_bio.sql`.
-5. Apply `202611180002_run_validation.sql` to align speed checks with the game and rate-limit run submissions.
-6. Apply `202611180003_realtime_leaderboard.sql` to publish score changes for live ranking refresh.
-7. Set Supabase Auth Site URL and redirect URLs to the deployed HTTPS origin. With email confirmation enabled, players must confirm their email before signing in.
-8. Create an account, choose a unique 3–18 character username using letters, numbers or underscores, and save the profile before playing a ranked run.
+## Install the PWA
 
-The leaderboard ranks each player's highest non-suspicious score, breaking ties by earliest achievement. Score writes use a server-side RPC with range, speed, coin and submission-rate checks. This is basic plausibility validation, not cheat-proof server simulation.
-
-## Cloudflare Pages
-
-Connect this GitHub repository in Cloudflare Pages. Use Vite preset, build command `npm run build`, output directory `dist`. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as build environment variables. Deploy to the free `*.pages.dev` domain.
-
-Free tiers can change. Cloudflare Pages Free currently offers up to 500 builds/month, one concurrent build and 20-minute build timeout. Supabase Free includes 500 MB database, 5 GB egress, 50,000 MAUs, and may pause low-activity projects after about a week. Neither free service guarantees uptime; check quotas before launch.
-
-## Install as an app
-
-Open the deployed HTTPS website on a supported browser and choose **Install app** (or use the browser menu → Install/Add to Home Screen). On iPhone/iPad, use Share → Add to Home Screen. Offline launch is supported after the first successful visit and cached asset load. Accounts, profile sync, ranked scores and leaderboard require a connection.
+For an install prompt, serve the deployed build over HTTPS. Open the site in a supported browser and choose **Install app**. On iPhone/iPad use Share → Add to Home Screen. The service worker caches the app shell and same-origin files after the first successful visit. The game can then reopen offline.
 
 ## Controls
 
-←/→ or A/D switches lanes; ↑/W/Space jumps; ↓/S slides; Escape pauses. Touch gestures and on-screen controls are supported.
+←/→ or A/D switches lanes; ↑/W/Space jumps; ↓/S slides; Escape pauses. Touch swipe and on-screen controls work on mobile.
 
-## Remaining integration
+## Deploy or distribute
 
-The admin screen does not yet provide user/score moderation controls. Configure Supabase and apply all migrations before enabling ranked play.
+The app is static and can be hosted on any static file server. A public host can impose its own transfer or build limits. To avoid dependence on a hosted service, build the project and serve the generated `dist` directory from a computer on your local network; remote players will not be able to access it unless you provide a reachable host. A public online leaderboard requires a server and storage and is intentionally not included.
+
+## Data and privacy
+
+Profile and run data stay in this browser's local storage. There are no analytics, ads, account cookies or network database requests. App files and optional system fonts are self-contained; no external font service is used.
